@@ -1,0 +1,3 @@
+numpy
+opencv-python
+matplotlib  # if you are visualizing results
