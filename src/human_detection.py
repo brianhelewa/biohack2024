@@ -1,9 +1,16 @@
 import cv2
+import numpy as np
 
-def detect_humans(frame):
-    # Initialize the HOG descriptor/person detector
-    hog = cv2.HOGDescriptor()
-    hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
+# Initialize the HOG descriptor/person detector
+hog = cv2.HOGDescriptor()
+hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
+
+cap = cv2.VideoCapture(0)
+
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        break
 
     # Resize for faster detection
     frame = cv2.resize(frame, (640, 480))
@@ -11,11 +18,16 @@ def detect_humans(frame):
     gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
 
     # Detect people in the image
-    boxes, weights = hog.detectMultiScale(gray, winStride=(8,8), padding=(8,8), scale=1.05)
+    boxes, weights = hog.detectMultiScale(frame, winStride=(8,8))
 
     # Draw bounding boxes around detected humans
     for (x, y, w, h) in boxes:
         cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
-    
-    return frame
 
+    cv2.imshow('Human Detection', frame)
+
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
